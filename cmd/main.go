@@ -62,7 +62,7 @@ func main() {
 	memStore.AddOrder(order3)
 	memStore.AddOrder(order4)
 
-	// Match orders
+	// call match orders to do the trading
 	matcher.MatchOrders("WIPRO")
 
 	// Print trades

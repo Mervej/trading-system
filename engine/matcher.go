@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"math"
 	"time"
 	"trading-system/common"
 	"trading-system/models"
@@ -38,10 +39,11 @@ func (me *MatchingEngine) MatchOrders(symbol string) {
 		sell := ob.SellOrders.Peek()
 
 		if buy == nil || sell == nil || buy.Price < sell.Price {
+			// return if no valid trade is found
 			break
 		}
 
-		tradeQty := min(buy.Quantity, sell.Quantity)
+		tradeQty := int(math.Min(float64(buy.Quantity), float64(sell.Quantity)))
 		tradePrice := sell.Price
 
 		trade := &models.Trade{
@@ -96,13 +98,6 @@ func (me *MatchingEngine) expireOldOrders(ob *common.OrderBook, now time.Time) {
 	}
 	expire(ob.BuyOrders, "Buy")
 	expire(ob.SellOrders, "Sell")
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }
 
 func generateID() string {

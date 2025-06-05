@@ -5,19 +5,14 @@ import (
 	"trading-system/models"
 )
 
-type OrderItem struct {
-	Order *models.Order
-	index int
-}
-
 type OrderPriorityQueue struct {
-	orders  []*OrderItem
+	orders  []*models.Order
 	isMaxPQ bool
 }
 
 func NewOrderPriorityQueue(isMax bool) *OrderPriorityQueue {
 	return &OrderPriorityQueue{
-		orders:  []*OrderItem{},
+		orders:  []*models.Order{},
 		isMaxPQ: isMax,
 	}
 }
@@ -26,29 +21,26 @@ func (pq OrderPriorityQueue) Len() int { return len(pq.orders) }
 
 func (pq OrderPriorityQueue) Less(i, j int) bool {
 	a, b := pq.orders[i], pq.orders[j]
+
+	// if price is same return the first order
+	if a.Price == b.Price {
+		return a.Timestamp.Before(b.Timestamp)
+	}
+
+	// now return the response basis on sell or buy order
 	if pq.isMaxPQ {
-		if a.Order.Price == b.Order.Price {
-			return a.Order.Timestamp.Before(b.Order.Timestamp)
-		}
-		return a.Order.Price > b.Order.Price
+		return a.Price > b.Price
 	} else {
-		if a.Order.Price == b.Order.Price {
-			return a.Order.Timestamp.Before(b.Order.Timestamp)
-		}
-		return a.Order.Price < b.Order.Price
+		return a.Price < b.Price
 	}
 }
 
 func (pq OrderPriorityQueue) Swap(i, j int) {
 	pq.orders[i], pq.orders[j] = pq.orders[j], pq.orders[i]
-	pq.orders[i].index = i
-	pq.orders[j].index = j
 }
 
 func (pq *OrderPriorityQueue) Push(x interface{}) {
-	n := len(pq.orders)
-	item := x.(*OrderItem)
-	item.index = n
+	item := x.(*models.Order)
 	pq.orders = append(pq.orders, item)
 }
 
@@ -64,18 +56,18 @@ func (pq *OrderPriorityQueue) Peek() *models.Order {
 	if pq.Len() == 0 {
 		return nil
 	}
-	return pq.orders[0].Order
+	return pq.orders[0]
 }
 
 func (pq *OrderPriorityQueue) Add(order *models.Order) {
-	heap.Push(pq, &OrderItem{Order: order})
+	heap.Push(pq, order)
 }
 
 func (pq *OrderPriorityQueue) Remove() *models.Order {
 	if pq.Len() == 0 {
 		return nil
 	}
-	return heap.Pop(pq).(*OrderItem).Order
+	return heap.Pop(pq).(*models.Order)
 }
 
 func (pq *OrderPriorityQueue) Init() {
