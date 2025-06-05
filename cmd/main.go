@@ -18,7 +18,7 @@ func main() {
 	// Add orders
 	order1 := &models.Order{
 		ID:        "1",
-		UserID:    "1",
+		UserID:    user.ID,
 		Type:      models.Buy,
 		Symbol:    "WIPRO",
 		Quantity:  100,
@@ -28,7 +28,7 @@ func main() {
 
 	order2 := &models.Order{
 		ID:        "2",
-		UserID:    "1",
+		UserID:    user.ID,
 		Type:      models.Sell,
 		Symbol:    "WIPRO",
 		Quantity:  100,
@@ -38,7 +38,7 @@ func main() {
 
 	order3 := &models.Order{
 		ID:        "3",
-		UserID:    "1",
+		UserID:    user.ID,
 		Type:      models.Buy,
 		Symbol:    "WIPRO",
 		Quantity:  50,
@@ -48,7 +48,7 @@ func main() {
 
 	order4 := &models.Order{
 		ID:        "4",
-		UserID:    "1",
+		UserID:    user.ID,
 		Type:      models.Sell,
 		Symbol:    "WIPRO",
 		Quantity:  50,
