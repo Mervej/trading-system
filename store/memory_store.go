@@ -57,15 +57,23 @@ func (ms *MemoryStore) ModifyOrder(orderID string, updatedOrder *models.Order) e
 		return fmt.Errorf("order with ID %s not found", orderID)
 	}
 
-	// Update the order attributes
-	existingOrder.Quantity = updatedOrder.Quantity
-	existingOrder.Price = updatedOrder.Price
-	existingOrder.Timestamp = updatedOrder.Timestamp
-	existingOrder.Status = updatedOrder.Status
-
-	// Update the order book
+	// Get the order book
 	ob, exists := ms.OrderBooks[existingOrder.Symbol]
 	if exists {
+		// Remove the existing order from the appropriate queue
+		if existingOrder.Type == models.Buy {
+			ob.BuyOrders.RemoveById(orderID)
+		} else {
+			ob.SellOrders.RemoveById(orderID)
+		}
+
+		// Update the order attributes
+		existingOrder.Quantity = updatedOrder.Quantity
+		existingOrder.Price = updatedOrder.Price
+		existingOrder.Timestamp = updatedOrder.Timestamp
+		existingOrder.Status = updatedOrder.Status
+
+		// Add the updated order back to the book
 		ob.AddOrder(existingOrder)
 	}
 

@@ -70,6 +70,34 @@ func (pq *OrderPriorityQueue) Remove() *models.Order {
 	return heap.Pop(pq).(*models.Order)
 }
 
+func (pq *OrderPriorityQueue) RemoveById(orderId string) {
+	if pq.Len() == 0 {
+		return
+	}
+
+	// Find the index of the order with the given ID
+	removeIdx := -1
+	for i, order := range pq.orders {
+		if order.ID == orderId {
+			removeIdx = i
+			break
+		}
+	}
+
+	// If order is found remove it and sort the heap
+	if removeIdx != -1 {
+		// Move the last element to curr position
+		lastIdx := len(pq.orders) - 1
+		pq.orders[removeIdx] = pq.orders[lastIdx]
+		pq.orders = pq.orders[:lastIdx]
+
+		// Reheapify if not removing the last element
+		if removeIdx != lastIdx {
+			heap.Fix(pq, removeIdx)
+		}
+	}
+}
+
 func (pq *OrderPriorityQueue) Init() {
 	heap.Init(pq)
 }
