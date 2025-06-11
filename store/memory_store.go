@@ -3,6 +3,7 @@ package store
 import (
 	"fmt"
 	"sync"
+	"time"
 	"trading-system/common"
 	"trading-system/models"
 )
@@ -70,8 +71,7 @@ func (ms *MemoryStore) ModifyOrder(orderID string, updatedOrder *models.Order) e
 		// Update the order attributes
 		existingOrder.Quantity = updatedOrder.Quantity
 		existingOrder.Price = updatedOrder.Price
-		existingOrder.Timestamp = updatedOrder.Timestamp
-		existingOrder.Status = updatedOrder.Status
+		existingOrder.Timestamp = time.Now()
 
 		// Add the updated order back to the book
 		ob.AddOrder(existingOrder)
